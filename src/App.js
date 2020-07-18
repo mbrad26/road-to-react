@@ -15,7 +15,7 @@ const App = () => {
       objectID: 1,
     },
   ];
-  
+
   const [searchTerm, setSearchTerm] = useState('');
 
   const handleSearch = e => {
@@ -31,23 +31,26 @@ const App = () => {
   return (
     <div>
       <h1>Hello World!</h1>
-      <Search onSearch={handleSearch} searchTerm={searchTerm}/>
+      <Search onSearch={handleSearch} search={searchTerm}/>
       <hr />
       <List list={searchedStories}/>
   </div>
   );
 };
 
-const Search = (props) => {
-  return (
+const Search = ({ search, onSearch }) => (
     <div>
       <label htmlFor='search'>Search: </label>
-      <input id='search' type='text' onChange={props.onSearch} />
-      <p>Searching for <strong>{props.searchTerm}</strong></p>
+      <input
+        id='search'
+        type='text'
+        value={search}
+        onChange={onSearch}
+      />
+      <p>Searching for <strong>{search}</strong></p>
     </div>
-
   )
-}
+
 
 const List = (props) =>
   props.list.map(item => (
