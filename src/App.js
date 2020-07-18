@@ -1,40 +1,56 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './App.css';
 
-const list = [
-    {
-  title: 'React',
-  url: 'https://reactjs.org/', author: 'Jordan Walke', num_comments: 3,
-  points: 4,
-  objectID: 0,
-  },
-  {
-  title: 'Redux',
-  url: 'https://redux.js.org/', author: 'Dan Abramov, Andrew Clark', num_comments: 2,
-  points: 5,
-  objectID: 1,
-  },
-];
-
 const App = () => {
-  const handleChange = e => {
-    console.log(e);
+  const stories = [
+    {
+      title: 'React',
+      url: 'https://reactjs.org/', author: 'Jordan Walke', num_comments: 3,
+      points: 4,
+      objectID: 0,
+    }, {
+      title: 'Redux',
+      url: 'https://redux.js.org/', author: 'Dan Abramov, Andrew Clark', num_comments: 2,
+      points: 5,
+      objectID: 1,
+    },
+  ];
+  
+  const [searchTerm, setSearchTerm] = useState('');
+
+  const handleSearch = e => {
+    setSearchTerm(e.target.value);
   };
+
+  const searchedStories = stories.filter(story =>
+    story.title
+         .toLowerCase()
+         .includes(searchTerm.toLowerCase())
+  );
+
   return (
     <div>
       <h1>Hello World!</h1>
-      <div>
-        <label htmlFor='search'>Search: </label>
-        <input id='search' type='text' onChange={handleChange} />
-      </div>
+      <Search onSearch={handleSearch} searchTerm={searchTerm}/>
       <hr />
-      <List />
+      <List list={searchedStories}/>
   </div>
   );
 };
 
-const List = () =>
-  list.map(item => (
+const Search = (props) => {
+  return (
+    <div>
+      <label htmlFor='search'>Search: </label>
+      <input id='search' type='text' onChange={props.onSearch} />
+      <p>Searching for <strong>{props.searchTerm}</strong></p>
+    </div>
+
+  )
+}
+
+const List = (props) =>
+  props.list.map(item => (
     <div key={item.objectID}>
       <span>
         <a href={item.url}>{item.title}</a>
