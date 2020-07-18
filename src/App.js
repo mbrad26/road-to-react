@@ -16,13 +16,22 @@ const list = [
   },
 ];
 
-const App = () =>
+const App = () => {
+  const handleChange = e => {
+    console.log(e);
+  };
+  return (
     <div>
       <h1>Hello World!</h1>
-      <Search />
+      <div>
+        <label htmlFor='search'>Search: </label>
+        <input id='search' type='text' onChange={handleChange} />
+      </div>
       <hr />
       <List />
-    </div>
+  </div>
+  );
+};
 
 const List = () =>
   list.map(item => (
@@ -35,13 +44,5 @@ const List = () =>
       <span>{item.points}</span>
     </div>
   ));
-
-
-const Search = () =>
-    <div>
-      <label htmlFor='search'>Search: </label>
-      <input id='search' type='text' />
-    </div>
-
 
 export default App;
