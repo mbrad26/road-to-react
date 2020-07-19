@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useReducer } from 'react';
+import React, { useState, useEffect, useRef, useReducer, useCallback } from 'react';
 import './App.css';
 
 const useSemiPersistentState = (key, initialState) => {
@@ -53,8 +53,7 @@ const App = () => {
     storiesReducer,
     { data: [], isLoading: false, isError: false }
   );
-
-  useEffect(() => {
+  const handleFetchStories = useCallback(() => {
     if (!searchTerm) return;
     dispatchStories({ type: 'STORIES_FETCH_INIT' });
 
@@ -70,6 +69,10 @@ const App = () => {
         dispatchStories({ type: 'STORIES_FETCH_FAILURE' })
       );
   }, [searchTerm]);
+
+  useEffect(() => {
+    handleFetchStories();
+  }, [handleFetchStories]);
 
   const handleRemoveStory = item => {
     dispatchStories({
