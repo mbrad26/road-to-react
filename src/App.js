@@ -29,7 +29,21 @@ const App = () => {
   ];
 
   const [searchTerm, setSearchTerm] = useSemiPersistentState('search', 'React');
-  const [stories, setStories] = useState(initialStories);
+  const [stories, setStories] = useState([]);
+
+  const getAsyncStories = () =>
+    new Promise(resolve =>
+      setTimeout(
+        () => resolve({ data: { stories: initialStories } }),
+        2000
+      )
+    );
+
+  useEffect(() => {
+    getAsyncStories().then(result => {
+      setStories(result.data.stories);
+    });
+  }, []);
 
   const handleRemoveStory = item => {
     const newStories = stories.filter(
