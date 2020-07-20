@@ -32,7 +32,7 @@ describe('App', () => {
   describe('storiesReducer', () => {
     it('removes a story from all stories', () => {
       const state = { data: stories, isLoading: false, isError: false };
-      const action = { type: 'REMOVE_STORY', payload: storyOne};
+      const action = { type: 'REMOVE_STORY', payload: storyOne };
 
       const newState = storiesReducer(state, action);
       const expectedState = { data: [storyTwo], isLoading: false, isError: false};
@@ -48,6 +48,17 @@ describe('App', () => {
       const expectedState = { isLoading: true, isError: false}
 
       expect(newState).toStrictEqual(expectedState)
+    });
+
+    it('fetches stories', () => {
+      const state = { isLoading: true, isError: false };
+      const action = { type: 'STORIES_FETCH_SUCCESS', payload: stories };
+
+      const newState = storiesReducer(state, action);
+      console.log(newState);
+      const expectedState = { data: stories, isLoading: false, isError: false };
+
+      expect(newState).toStrictEqual(expectedState);
     });
   });
 });

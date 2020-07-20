@@ -35,7 +35,6 @@ const storiesReducer = (state, action) => {
         isError: false,
       };
     case 'STORIES_FETCH_SUCCESS':
-    console.log(action);
       return {
         ...state,
         isLoading: false,
@@ -43,7 +42,6 @@ const storiesReducer = (state, action) => {
         data: action.payload,
       };
     case 'STORIES_FETCH_FAILURE':
-    console.log(action);
       return {
         ...state,
         isLoading: false,
