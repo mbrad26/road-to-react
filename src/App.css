@@ -37,9 +37,15 @@
   cursor: pointer;
   transition: all 0.1s ease-in;
 }
+
 .button:hover {
   background: #171212;
   color: #ffffff;
+}
+
+.button:hover > svg > g {
+  fill: #ffffff;
+  stroke: #ffffff;
 }
 
 .button_small {
