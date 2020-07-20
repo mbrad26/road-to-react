@@ -1,4 +1,10 @@
-import React, { useState, useEffect, useRef, useReducer, useCallback } from 'react';
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  useReducer,
+  useCallback
+} from 'react';
 import axios from 'axios';
 import './App.css';
 import { ReactComponent as Check } from './check.svg';
@@ -7,13 +13,18 @@ const useSemiPersistentState = (key, initialState) => {
   const [value, setValue] = useState(
     localStorage.getItem(key) || initialState
   );
+  const isMounted = useRef(false);
 
   useEffect(() => {
-    localStorage.setItem(key, value);
-  }, [value, key]);
+      if(!isMounted.current) {
+          isMounted.current = true;
+      } else {
+        localStorage.setItem(key, value);
+      }
+    }, [value, key]);
 
-  return [value, setValue];
-};
+    return [value, setValue];
+  };
 
 const storiesReducer = (state, action) => {
   switch(action.type) {
@@ -75,12 +86,12 @@ const App = () => {
     handleFetchStories();
   }, [handleFetchStories]);
 
-  const handleRemoveStory = item => {
+  const handleRemoveStory = useCallback(item => {
     dispatchStories({
       type: 'REMOVE_STORY',
       payload: item,
     });
-  }
+  }, []);
 
   const handleSearchInput = e => {
     setSearchTerm(e.target.value);
@@ -96,6 +107,8 @@ const App = () => {
          .toLowerCase()
          .includes(searchTerm.toLowerCase())
   );
+
+  console.log('B:App');
 
   return (
     <div className='container'>
@@ -132,7 +145,7 @@ const SearchForm = ({
         isFocused
         onInputChange={onSearchInput}
       >
-        <strong>Search:</strong>
+        <strong>Search: </strong>
       </InputWithLabel>
       <button
         className='button button_large'
@@ -177,14 +190,16 @@ const InputWithLabel = ({
     );
   };
 
-const List = ({ list, onRemoveItem }) =>
+const List = React.memo(({ list, onRemoveItem }) =>
+  console.log('B:List') ||
   list.map(item => (
     <Item
       key={item.objectID}
       item={item}
       onRemoveItem={onRemoveItem}
     />
-  ));
+  ))
+);
 
 const Item = ({ item, onRemoveItem }) => {
   const handleRemoveItem = () =>
