@@ -3,7 +3,7 @@ import React, {
   useEffect,
   useRef,
   useReducer,
-  useCallback
+  useCallback,
 } from 'react';
 import axios from 'axios';
 import './App.css';
@@ -59,6 +59,15 @@ const storiesReducer = (state, action) => {
   }
 }
 
+const getSumComments = stories => {
+  console.log('C');
+
+  return stories.data.reduce(
+    (result, value) => result + value.num_comments,
+    0
+  );
+};
+
 const App = () => {
   const API_ENDPOINT = 'https://hn.algolia.com/api/v1/search?query=';
   const [searchTerm, setSearchTerm] = useSemiPersistentState('search', 'React');
@@ -81,6 +90,7 @@ const App = () => {
       dispatchStories({ type: 'STORIES_FETCH_FAILURE' });
     }
   }, [url]);
+  const sumComments = React.useMemo(() => getSumComments(stories), [stories]);
 
   useEffect(() => {
     handleFetchStories();
@@ -112,7 +122,7 @@ const App = () => {
 
   return (
     <div className='container'>
-      <h1 className='headline-promary'>My Hacker Stories</h1>
+      <h1 className='headline-promary'>My Hacker Stories with {sumComments} comments.</h1>
       <SearchForm
         searchTerm={searchTerm}
         onSearchInput={handleSearchInput}
