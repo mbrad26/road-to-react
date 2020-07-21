@@ -176,4 +176,23 @@ describe('App', () => {
       expect(screen.queryByText('Something went wrong ...')).toBeInTheDocument();
     }
   });
+
+  it('removes a story', async () => {
+    const promise = Promise.resolve({
+      data: {
+        hits: stories
+      }
+    });
+    axios.get.mockImplementationOnce(() => promise);
+
+    render(<App />);
+
+    await act(() => promise);
+
+    expect(screen.getByText('Jordan Walke')).toBeInTheDocument();
+
+    fireEvent.click(screen.getAllByRole('button')[1]);
+
+    expect(screen.queryByText('Jordan Walke')).toBeNull();
+  });
 });
