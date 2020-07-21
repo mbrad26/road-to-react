@@ -60,8 +60,6 @@ const storiesReducer = (state, action) => {
 }
 
 const getSumComments = stories => {
-  console.log('C');
-
   return stories.data.reduce(
     (result, value) => result + value.num_comments,
     0
@@ -81,7 +79,7 @@ const App = () => {
 
     try {
       const result = await axios.get(url);
-      
+
       dispatchStories({
         type: 'STORIES_FETCH_SUCCESS',
         payload: result.data.hits,
@@ -117,8 +115,6 @@ const App = () => {
          .toLowerCase()
          .includes(searchTerm.toLowerCase())
   );
-
-  console.log('B:App');
 
   return (
     <div className='container'>
@@ -201,7 +197,6 @@ const InputWithLabel = ({
   };
 
 const List = React.memo(({ list, onRemoveItem }) =>
-  console.log('B:List') ||
   list.map(item => (
     <Item
       key={item.objectID}
