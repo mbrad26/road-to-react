@@ -192,10 +192,10 @@ describe('App', () => {
   });
 
   it('searches for specific stories', async () => {
-    const promise = Promise.resolve({
+    const reactPromise = Promise.resolve({
       data: {
         hits: stories,
-      }
+      },
     });
     const anotherStory = {
       title: 'JavaScript',
@@ -204,39 +204,51 @@ describe('App', () => {
       num_comments: 15,
       points: 10,
       objectID: 3,
-    }
-    const anotherPromise = Promise.resolve({
-       data: {
-         hits: [anotherStory],
-       }
-     });
-     axios.get.mockImplementationOnce(url => {
-       if (url.includes('React')) {
-         return promise;
-       }
-       if (url.includes('JavaScript')) {
-         return anotherPromise;
-       }
+    };
+    const javascriptPromise = Promise.resolve({
+      data: {
+        hits: [anotherStory],
+      },
+    });
+    axios.get.mockImplementation(url => {
+      if (url.includes('React')) {
+        return reactPromise;
+      }
 
-       throw Error();
-     })
+      if (url.includes('JavaScript')) {
+        return javascriptPromise;
+      }
 
-     render(<App />);
-     await act(() => promise);
+      throw Error();
+    });
 
-     expect(screen.queryByDisplayValue('React')).toBeInTheDocument();
-     expect(screen.queryByDisplayValue('JavaScript')).toBeNull();
-     expect(screen.queryByText('Jordan Walke')).toBeInTheDocument();
-     expect(screen.queryByText('Dan Abramov, Andrew Clark')).toBeInTheDocument();
-     expect(screen.queryByText('Brendan Eich')).toBeNull();
+    render(<App />);
 
-     fireEvent.change(screen.queryByDisplayValue('React'), {
-       target: {
-         value: 'JavaScript',
-       }
-     });
+    await act(() => reactPromise);
 
-     expect(screen.queryByDisplayValue('React')).toBeNull();
-     expect(screen.queryByDisplayValue('JavaScript') ).toBeInTheDocument();
+    expect(screen.queryByDisplayValue('React')).toBeInTheDocument();
+    expect(screen.queryByDisplayValue('JavaScript')).toBeNull();
+    expect(screen.queryByText('Jordan Walke')).toBeInTheDocument();
+    expect(screen.queryByText('Dan Abramov, Andrew Clark')).toBeInTheDocument();
+    expect(screen.queryByText('Brendan Eich')).toBeNull();
+
+    fireEvent.change(screen.queryByDisplayValue('React'), {
+      target: {
+        value: 'JavaScript',
+      },
+    });
+
+    expect(screen.queryByDisplayValue('React')).toBeNull();
+    expect(screen.queryByDisplayValue('JavaScript')).toBeInTheDocument();
+
+    fireEvent.submit(screen.queryByText('Submit'));
+
+    await act(() => javascriptPromise);
+
+    expect(screen.queryByText('Jordan Walke')).toBeNull();
+    expect(
+      screen.queryByText('Dan Abramov, Andrew Clark')
+    ).toBeNull();
+    expect(screen.queryByText('Brendan Eich')).toBeInTheDocument();
   });
 });
