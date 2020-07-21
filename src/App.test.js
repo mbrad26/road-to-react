@@ -88,4 +88,14 @@ describe('Item', () => {
 
     expect(screen.getByRole('button')).toBeInTheDocument();
   });
+
+  it('clicking the dismiss button calls the calback handler', () => {
+    const callback = jest.fn();
+    render(<Item item={storyOne} onRemoveItem={callback} />);
+
+    // fireEvent.click(screen.getByRole('button'));
+    screen.getByRole('button').click();
+
+    expect(callback).toHaveBeenCalledTimes(1);
+  });
 });
