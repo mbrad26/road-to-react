@@ -156,5 +156,24 @@ describe('App', () => {
 
     screen.debug();
     expect(screen.queryByText(/Loading/)).toBeNull();
+
+    expect(screen.getAllByText('React')[0]).toBeInTheDocument();
+    expect(screen.getAllByText('Redux')[0]).toBeInTheDocument();
+  });
+
+  it('fails fetching data', async () => {
+    const promise = Promise.reject();
+    axios.get.mockImplementationOnce(() => promise);
+
+    render(<App />);
+
+    expect(screen.queryByText(/Loading/)).toBeInTheDocument();
+
+    try {
+      await act(() => promise);
+    } catch {
+      expect(screen.queryByText(/Loading/)).toBeNull();
+      expect(screen.queryByText('Something went wrong ...')).toBeInTheDocument();
+    }
   });
 });
