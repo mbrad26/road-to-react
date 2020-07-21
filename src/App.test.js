@@ -120,4 +120,12 @@ describe('SearchForm', () => {
 
     expect(screen.getByLabelText('Search:')).toBeInTheDocument();
   });
+
+  it('calls onSearchInput on input field change', () => {
+    render(<SearchForm {...searchFormProps} />);
+
+    fireEvent.change(screen.getByDisplayValue('React'), { target: { value: 'Redux '} });
+
+    expect(searchFormProps.onSearchInput).toHaveBeenCalledTimes(1);
+  });
 });
