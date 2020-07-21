@@ -99,3 +99,19 @@ describe('Item', () => {
     expect(callback).toHaveBeenCalledTimes(1);
   });
 });
+
+describe('SearchForm', () => {
+  const searchFormProps = {
+    searchTerm: 'React',
+    onSearchInput: jest.fn(),
+    onSearchSubmit: jest.fn(),
+  }
+
+  it('renders input field with its value', () => {
+    render(<SearchForm {...searchFormProps}/>);
+
+    screen.debug();
+
+    expect(screen.getByDisplayValue('React')).toBeInTheDocument();
+  });
+});
