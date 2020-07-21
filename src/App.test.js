@@ -108,10 +108,16 @@ describe('SearchForm', () => {
   }
 
   it('renders input field with its value', () => {
-    render(<SearchForm {...searchFormProps}/>);
+    render(<SearchForm {...searchFormProps} />);
 
     screen.debug();
 
     expect(screen.getByDisplayValue('React')).toBeInTheDocument();
+  });
+
+  it('renders the correct label', () => {
+    render(<SearchForm {...searchFormProps} />);
+
+    expect(screen.getByLabelText('Search:')).toBeInTheDocument();
   });
 });
