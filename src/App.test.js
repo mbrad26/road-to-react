@@ -12,6 +12,9 @@ import App, {
   SearchForm,
   InputWithLabel,
 } from './App';
+import axios from 'axios';
+
+jest.mock('axios');
 
 const storyOne = {
   title: 'React',
@@ -110,8 +113,6 @@ describe('SearchForm', () => {
   it('renders input field with its value', () => {
     render(<SearchForm {...searchFormProps} />);
 
-    screen.debug();
-
     expect(screen.getByDisplayValue('React')).toBeInTheDocument();
   });
 
@@ -135,5 +136,25 @@ describe('SearchForm', () => {
     fireEvent.submit(screen.getByRole('button'));
 
     expect(searchFormProps.onSearchSubmit).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe('App', () => {
+  it('succeeds fetching data', async () => {
+    const promise = Promise.resolve({
+      data: {
+        hits: stories
+      }
+    });
+    axios.get.mockImplementationOnce(() => promise);
+    render(<App />);
+
+    screen.debug();
+    expect(screen.queryByText(/Loading/)).toBeInTheDocument();
+
+    await act(() => promise);
+
+    screen.debug();
+    expect(screen.queryByText(/Loading/)).toBeNull();
   });
 });
