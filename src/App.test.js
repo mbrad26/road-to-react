@@ -1,17 +1,13 @@
 import React from 'react';
+import SearchForm from './SearchForm';
+import List, { Item } from './List';
 import {
   render,
   screen,
   fireEvent,
   act,
 } from '@testing-library/react';
-import App, {
-  storiesReducer,
-  List,
-  Item,
-  SearchForm,
-  InputWithLabel,
-} from './App';
+import App, { storiesReducer } from './App';
 import axios from 'axios';
 
 jest.mock('axios');

@@ -5,9 +5,10 @@ import React, {
   useReducer,
   useCallback,
 } from 'react';
+import SearchForm from './SearchForm';
+import List from './List';
 import axios from 'axios';
 import './App.css';
-import { ReactComponent as Check } from './check.svg';
 
 const useSemiPersistentState = (key, initialState) => {
   const [value, setValue] = useState(
@@ -139,93 +140,6 @@ const App = () => {
   );
 };
 
-const SearchForm = ({
-  searchTerm,
-  onSearchInput,
-  onSearchSubmit
-}) =>  (
-    <form className='search-form' onSubmit={onSearchSubmit}>
-      <InputWithLabel
-        id='search'
-        value={searchTerm}
-        isFocused
-        onInputChange={onSearchInput}
-      >
-        <strong>Search: </strong>
-      </InputWithLabel>
-      <button
-        className='button button_large'
-        type='submit'
-        disabled={!searchTerm}
-      >
-        Submit
-      </button>
-    </form>
-  )
-
-const InputWithLabel = ({
-    id,
-    type='text',
-    value,
-    onInputChange,
-    isFocused,
-    children
-  }) => {
-    const inputRef = useRef();
-
-    useEffect(() => {
-      if (isFocused && inputRef.current) {
-        inputRef.current.focus();
-      }
-    }, [isFocused]);
-
-    return (
-      <>
-        <label htmlFor={id} className='label'>{children} </label>
-        &nbsp;
-        <input
-          className='input'
-          ref={inputRef}
-          id={id}
-          type={type}
-          value={value}
-          onChange={onInputChange}
-        />
-        <p>Searching for <strong>{value}</strong></p>
-      </>
-    );
-  };
-
-const List = React.memo(({ list, onRemoveItem }) =>
-  list.map(item => (
-    <Item
-      key={item.objectID}
-      item={item}
-      onRemoveItem={onRemoveItem}
-    />
-  ))
-);
-
-const Item = ({ item, onRemoveItem }) => (
-  <div className='item'>
-    <span style={{ width: '40%' }}>
-      <a href={item.url}>{item.title}</a>
-    </span>
-    <span style={{ width: '30%' }}>{item.author}</span>
-    <span style={{ width: '10%' }}>{item.num_comments}</span>
-    <span style={{ width: '10%' }}>{item.points}</span>
-    <span style={{ width: '10%' }}>
-      <button
-        className='button button_small'
-        type='button'
-        onClick={() => onRemoveItem(item)}
-      >
-        <Check height='18px' width='18px' />
-      </button>
-    </span>
-  </div>
-);
-
 export default App;
 
-export { storiesReducer, SearchForm, InputWithLabel, List, Item };
+export { storiesReducer };
