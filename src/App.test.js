@@ -81,6 +81,11 @@ describe('Item', () => {
 
     expect(screen.getByText('Jordan Walke')).toBeInTheDocument();
     expect(screen.getByText('React')).toBeInTheDocument();
-    screen.debug();
+  });
+
+  it('renders a clickable button', () => {
+    render(<Item item={storyOne}/>);
+
+    expect(screen.getByRole('button')).toBeInTheDocument();
   });
 });
