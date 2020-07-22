@@ -11,14 +11,17 @@ const SORTS = {
 };
 
 const List = React.memo(({ list, onRemoveItem }) => {
-  const [sort, setSort] = useState('NONE');
+  const [sort, setSort] = useState({sortKey: 'NONE', isReverse: false});
 
   const handleSort = sortKey => {
-    setSort(sortKey);
+    const isReverse = sort.sortKey === sortKey && !sort.isReverse;
+    setSort({ sortKey, isReverse });
   };
 
- const sortFunction = SORTS[sort];
- const sortedList = sortFunction(list);
+ const sortFunction = SORTS[sort.sortKey];
+ const sortedList = sort.isReverse
+  ? sortFunction(list).reverse()
+  : sortFunction(list);
 
   return (
       <div>
@@ -49,7 +52,6 @@ const List = React.memo(({ list, onRemoveItem }) => {
     )
   }
 )
-
 
 const Item = ({ item, onRemoveItem }) => (
   <div className='item' style={{ display: 'flex' }}>
