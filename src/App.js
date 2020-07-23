@@ -27,6 +27,10 @@ const useSemiPersistentState = (key, initialState) => {
     return [value, setValue];
   };
 
+const API_ENDPOINT = 'https://hn.algolia.com/api/v1/search?query=';
+
+const getUrl = searchTerm => `${API_ENDPOINT}${searchTerm}`;
+
 const storiesReducer = (state, action) => {
   switch(action.type) {
     case 'STORIES_FETCH_INIT':
@@ -68,18 +72,40 @@ const getSumComments = stories => {
 };
 
 const App = () => {
-  const API_ENDPOINT = 'https://hn.algolia.com/api/v1/search?query=';
   const [searchTerm, setSearchTerm] = useSemiPersistentState('search', 'React');
-  const [url, setUrl] = useState(`${API_ENDPOINT}${searchTerm}`);
+  const [urls, setUrls] = useState([getUrl(searchTerm)]);
+  const extractSearchTerm = url => url.replace('API_ENDPOINT', '');
+  const getLastSearches = urls =>
+    urls
+      .reduce((result, url, index) => {
+        const searchTerm = extractSearchTerm(url);
+
+        if (index === 0) {
+          return result.concat(searchTerm);
+        }
+
+        const previousSearchTerm = result[result.length - 1];
+
+        if (searchTerm === previousSearchTerm) {
+          return result;
+        } else {
+          return result.concat(searchTerm);
+        }
+      }, [])
+      .slice(-6)
+      .slice(0, -1);
+
   const [stories, dispatchStories] = useReducer(
     storiesReducer,
     { data: [], isLoading: false, isError: false }
   );
+
   const handleFetchStories = useCallback(async () => {
     dispatchStories({ type: 'STORIES_FETCH_INIT' });
 
     try {
-      const result = await axios.get(url);
+      const lastUrl = urls[urls.length - 1];
+      const result = await axios.get(lastUrl);
 
       dispatchStories({
         type: 'STORIES_FETCH_SUCCESS',
@@ -88,8 +114,9 @@ const App = () => {
     } catch {
       dispatchStories({ type: 'STORIES_FETCH_FAILURE' });
     }
-  }, [url]);
-  const sumComments = React.useMemo(() => getSumComments(stories), [stories]);
+  }, [urls]);
+
+  console.log(urls);
 
   useEffect(() => {
     handleFetchStories();
@@ -102,13 +129,16 @@ const App = () => {
     });
   }, []);
 
+  const sumComments = React.useMemo(() => getSumComments(stories), [stories]);
+
   const handleSearchInput = e => {
     setSearchTerm(e.target.value);
   };
 
   const handleSearchSubmit = event => {
+    handleSearch(searchTerm);
+
     event.preventDefault();
-    setUrl(`${API_ENDPOINT}${searchTerm}`);
   }
 
   const searchedStories = stories.data.filter(story =>
@@ -117,6 +147,19 @@ const App = () => {
          .includes(searchTerm.toLowerCase())
   );
 
+  const handleLastSearch = searchTerm => {
+    setSearchTerm(searchTerm);
+
+    handleSearch(searchTerm);
+  }
+
+  const handleSearch = searchTerm => {
+    const url = getUrl(searchTerm);
+    setUrls(urls.concat(url));
+  }
+
+  const lastSearches = getLastSearches(urls);
+
   return (
     <div className='container'>
       <h1 className='headline-promary'>My Hacker Stories with {sumComments} comments.</h1>
@@ -124,6 +167,11 @@ const App = () => {
         searchTerm={searchTerm}
         onSearchInput={handleSearchInput}
         onSearchSubmit={handleSearchSubmit}
+      />
+
+      <LastSearches
+        lastSearches={lastSearches}
+        onLastSearch={handleLastSearch}
       />
 
       {stories.isError && <p>Something went wrong ...</p>}
@@ -139,6 +187,20 @@ const App = () => {
   </div>
   );
 };
+
+const LastSearches = ({ lastSearches, onLastSearch }) => (
+  <>
+  {lastSearches.map((searchTerm, index) =>
+    <button
+      key={searchTerm + index}
+      type='button'
+      onClick={() => onLastSearch(searchTerm)}
+    >
+      {searchTerm}
+    </button>
+  )}
+  </>
+);
 
 export default App;
 
